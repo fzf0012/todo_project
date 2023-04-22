@@ -5,6 +5,8 @@ from .models import TodoList, TodoItem
 from .forms import RegisterForm, TodoListForm, TodoItemForm
 from django.shortcuts import render
 import datetime
+from django.shortcuts import get_object_or_404
+
 
 def login_view(request):
     return render(request, 'login.html')
@@ -83,12 +85,35 @@ def edit_todo_item(request, item_id):
         form = TodoItemForm(instance=todo_item)
         return render(request, 'edit_todo_item.html', {'form': form})
 
-@login_required
-def view_todo_item(request, item_id):
-    todo_item = TodoItem.objects.get(pk=item_id, list__user=request.user)
-    return render(request, 'view_todo_item.html', {'todo_item': todo_item})
+
+def view_todo_items(request, todo_list_id):
+    todo_list = get_object_or_404(TodoList, pk=todo_list_id)
+    todo_items = TodoItem.objects.filter(todo_list=todo_list)
+    return render(request, 'view_todo_items.html', {'todo_list': todo_list, 'todo_items': todo_items})
 
 
+def edit_todo_item(request, todo_item_id):
+    todo_item = get_object_or_404(TodoItem, pk=todo_item_id)
+    if request.method == 'POST':
+        form = TodoItemForm(request.POST, instance=todo_item)
+        if form.is_valid():
+            form.save()
+            return redirect('view_todo_items', todo_list_id=todo_item.todo_list.id)
+    else:
+        form = TodoItemForm(instance=todo_item)
+    return render(request, 'edit_todo_item.html', {'form': form, 'todo_item': todo_item})
+
+def toggle_completed(request, todo_item_id):
+    todo_item = get_object_or_404(TodoItem, pk=todo_item_id)
+    todo_item.completed = not todo_item.completed
+    todo_item.save()
+    return redirect('view_todo_items', todo_list_id=todo_item.todo_list.id)
+
+def delete_todo_item(request, todo_item_id):
+    todo_item = get_object_or_404(TodoItem, pk=todo_item_id)
+    todo_list_id = todo_item.todo_list.id
+    todo_item.delete()
+    return redirect('view_todo_items', todo_list_id=todo_list_id)
 @login_required
 def dashboard(request):
     if request.method == 'POST':
