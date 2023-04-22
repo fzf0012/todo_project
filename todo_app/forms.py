@@ -17,10 +17,9 @@ class RegisterForm(UserCreationForm):
 class TodoListForm(forms.ModelForm):
     class Meta:
         model = TodoList
-        fields = ['name', 'description']
+        fields = ['name']
 
 class TodoItemForm(forms.ModelForm):
     class Meta:
         model = TodoItem
-        fields = ['name', 'description', 'status', 'due_date']
-        widgets = {'due_date': forms.DateTimeInput(attrs={'type': 'datetime-local'})}
+        fields = ['content', 'completed']

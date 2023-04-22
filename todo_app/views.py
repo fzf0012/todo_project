@@ -62,17 +62,14 @@ def delete_todo_list(request, list_id):
 
 @login_required
 def create_todo_item(request, list_id):
-    todo_list = TodoList.objects.get(pk=list_id, user=request.user)
+    todo_list = TodoList.objects.get(pk=list_id)
     if request.method == 'POST':
-        form = TodoItemForm(request.POST)
-        if form.is_valid():
-            todo_item = form.save(commit=False)
-            todo_item.list = todo_list
-            todo_item.save()
+        content = request.POST.get('content')
+        if content:
+            TodoItem.objects.create(todo_list=todo_list, content=content)
             return redirect('dashboard')
-    else:
-        form = TodoItemForm()
-    return render(request, 'create_todo_item.html', {'form': form, 'list': todo_list})
+
+    return render(request, 'create_todo_item.html', {'todo_list': todo_list})
 
 @login_required
 def edit_todo_item(request, item_id):
@@ -90,3 +87,19 @@ def edit_todo_item(request, item_id):
 def view_todo_item(request, item_id):
     todo_item = TodoItem.objects.get(pk=item_id, list__user=request.user)
     return render(request, 'view_todo_item.html', {'todo_item': todo_item})
+
+
+@login_required
+def dashboard(request):
+    if request.method == 'POST':
+        form = TodoListForm(request.POST)
+        if form.is_valid():
+            todo_list = form.save(commit=False)
+            todo_list.user = request.user
+            todo_list.save()
+            return redirect('dashboard')
+    else:
+        form = TodoListForm()
+
+    todo_lists = TodoList.objects.filter(user=request.user)
+    return render(request, 'dashboard.html', {'form': form, 'todo_lists': todo_lists})

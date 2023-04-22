@@ -2,11 +2,19 @@
 
 {% block content %}
   <h2>Dashboard</h2>
-  <h3>Todo Items Due Today</h3>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create Todo List</button>
+  </form>
+
+  <h3>Your Todo Lists</h3>
   <ul>
-    {% for item in todo_items %}
-      <li><a href="{% url 'view_todo_item' item_id=item.pk %}">{{ item.name }}</a></li>
-    {% endfor %}
+  {% for todo_list in todo_lists %}
+    <li>
+      <a href="{% url 'create_todo_item' todo_list.id %}">{{ todo_list.name }}</a>
+      <a href="{% url 'delete_todo_list' todo_list.id %}">Delete</a>
+    </li>
+  {% endfor %}
   </ul>
-  <a href="{% url 'create_todo_list' %}">Create Todo List</a>
 {% endblock %}
