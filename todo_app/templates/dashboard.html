@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Dashboard</h2>
+  <h3>Todo Items Due Today</h3>
+  <ul>
+    {% for item in todo_items %}
+      <li><a href="{% url 'view_todo_item' item_id=item.pk %}">{{ item.name }}</a></li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'create_todo_list' %}">Create Todo List</a>
+{% endblock %}
