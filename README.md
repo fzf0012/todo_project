@@ -8,3 +8,4 @@ For each TodoList, a user can add TodoItems.  Additionally, a user can edit the 
 Here is the the (app):
 [https://cpsc4970-23spring-todo.herokuapp.com/]
 
+<a href="https://cpsc4970-23spring-todo.herokuapp.com/" target="_blank">link to app</a>
